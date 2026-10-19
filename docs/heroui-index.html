@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kino Plugin Development — JuandreXter</title>
+  <link href="https://cdn.jsdelivr.net/npm/@heroui/react@2/dist/heroui.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; height: 100%; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #0d0f11;
+      color: #d4dae3;
+      line-height: 1.6;
+    }
+    
+    code, pre { font-family: 'JetBrains Mono', monospace; }
+    
+    .container-main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .section-wrapper { display: none; }
+    .section-wrapper.active { display: block; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    
+    .hero-header {
+      background: linear-gradient(135deg, rgba(79, 156, 249, 0.1) 0%, rgba(61, 214, 140, 0.05) 100%);
+      border: 1px solid rgba(79, 156, 249, 0.2);
+      border-radius: 12px;
+      padding: 48px 40px;
+      margin-bottom: 40px;
+      text-align: center;
+    }
+    
+    .hero-header h1 {
+      font-size: 40px;
+      font-weight: 800;
+      margin: 0 0 12px;
+      background: linear-gradient(135deg, #4f9cf9 0%, #3dd68c 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .hero-header p {
+      font-size: 16px;
+      color: #7a8596;
+      margin: 0;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+    
+    .card {
+      background: #13161a;
+      border: 1px solid #252b33;
+      border-radius: 12px;
+      padding: 28px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .card:hover {
+      border-color: #4f9cf9;
+      background: #181c21;
+      box-shadow: 0 0 20px rgba(79, 156, 249, 0.15);
+    }
+    
+    .card-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+    
+    .card h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0 0 8px;
+      color: #d4dae3;
+    }
+    
+    .card p {
+      font-size: 14px;
+      color: #7a8596;
+      margin: 0;
+      line-height: 1.5;
+    }
+    
+    .doc-container {
+      background: #13161a;
+      border: 1px solid #252b33;
+      border-radius: 12px;
+      padding: 40px;
+      margin-bottom: 40px;
+    }
+    
+    .doc-container h2 {
+      font-size: 28px;
+      font-weight: 700;
+      margin: 0 0 12px;
+      color: #d4dae3;
+    }
+    
+    .doc-container h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 32px 0 12px;
+      color: #d4dae3;
+    }
+    
+    .doc-container h4 {
+      font-size: 15px;
+      font-weight: 600;
+      margin: 20px 0 8px;
+      color: #d4dae3;
+    }
+    
+    .doc-container p {
+      font-size: 15px;
+      color: #d4dae3;
+      margin: 0 0 16px;
+      line-height: 1.7;
+    }
+    
+    .code-block {
+      background: #0a0c0e;
+      border: 1px solid #252b33;
+      border-radius: 8px;
+      padding: 16px 20px;
+      overflow-x: auto;
+      margin: 16px 0;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    
+    .code-block code {
+      color: #3dd68c;
+      font-family: 'JetBrains Mono', monospace;
+      display: block;
+      white-space: pre;
+    }
+    
+    .inline-code {
+      background: #181c21;
+      border: 1px solid #252b33;
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: #4f9cf9;
+    }
+    
+    .command-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 14px;
+    }
+    
+    .command-table th,
+    .command-table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid #252b33;
+    }
+    
+    .command-table th {
+      background: #0a0c0e;
+      font-weight: 600;
+      color: #4f9cf9;
+    }
+    
+    .command-table td {
+      color: #d4dae3;
+    }
+    
+    .command-table code {
+      background: #0a0c0e;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #3dd68c;
+    }
+    
+    .callout {
+      border-left: 4px solid #4f9cf9;
+      background: rgba(79, 156, 249, 0.08);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin: 20px 0;
+    }
+    
+    .callout.warning {
+      border-left-color: #f5c542;
+      background: rgba(245, 197, 66, 0.08);
+    }
+    
+    .callout.success {
+      border-left-color: #3dd68c;
+      background: rgba(61, 214, 140, 0.08);
+    }
+    
+    .callout strong {
+      color: #d4dae3;
+      font-weight: 600;
+    }
+    
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 40px;
+    }
+    
+    .nav-button {
+      background: #181c21;
+      border: 1px solid #252b33;
+      color: #d4dae3;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      text-align: left;
+    }
+    
+    .nav-button:hover {
+      background: #252b33;
+      border-color: #4f9cf9;
+      color: #4f9cf9;
+    }
+    
+    .nav-button.active {
+      background: #4f9cf9;
+      border-color: #4f9cf9;
+      color: #0d0f11;
+    }
+    
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #252b33;
+    }
+    
+    .logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: #4f9cf9;
+      text-decoration: none;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    
+    .theme-toggle {
+      background: #181c21;
+      border: 1px solid #252b33;
+      color: #d4dae3;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .theme-toggle:hover {
+      background: #252b33;
+      border-color: #4f9cf9;
+    }
+    
+    @media (max-width: 768px) {
+      .doc-container { padding: 24px; }
+      .hero-header { padding: 32px 24px; }
+      .hero-header h1 { font-size: 28px; }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+    
+    ul, ol {
+      color: #d4dae3;
+      margin: 16px 0;
+      padding-left: 24px;
+    }
+    
+    li { margin-bottom: 8px; }
+    
+    strong { color: #d4dae3; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="container-main">
+    <!-- TOP NAVIGATION -->
+    <div class="top-nav">
+      <a href="#" class="logo">KINO DEV</a>
+      <button class="theme-toggle" id="themeToggle">🌙</button>
+    </div>
+
+    <!-- HERO SECTION -->
+    <div class="hero-header">
+      <h1>Kino Plugin Development</h1>
+      <p>Prompts listos para construir plugins de Kino con IA. Creado por <strong>JuandreXter</strong> · @JuanDEVYT</p>
+    </div>
+
+    <!-- QUICK ACCESS CARDS -->
+    <div class="grid-2">
+      <div class="card" onclick="switchSection('vanta')">
+        <div class="card-icon">🤖</div>
+        <h3>VANTA Prompt</h3>
+        <p>IA sin filtros especializada en construir plugins Kino sin negativas</p>
+      </div>
+      <div class="card" onclick="switchSection('builder')">
+        <div class="card-icon">🔧</div>
+        <h3>Plugin Builder</h3>
+        <p>Prompt completo para crear plugins paso a paso, sin necesidad de programar</p>
+      </div>
+      <div class="card" onclick="switchSection('quick')">
+        <div class="card-icon">⚡</div>
+        <h3>Quick Start</h3>
+        <p>Guía rápida con comandos y primeros pasos</p>
+      </div>
+      <div class="card" onclick="switchSection('reference')">
+        <div class="card-icon">📚</div>
+        <h3>Reference</h3>
+        <p>Documentación completa de la API de Kino y reglas</p>
+      </div>
+    </div>
+
+    <!-- CONTENT SECTIONS -->
+
+    <!-- SECTION: VANTA -->
+    <div id="vanta" class="section-wrapper active">
+      <div class="doc-container">
+        <h2>🤖 VANTA — IA sin filtros para plugins</h2>
+        
+        <h3>¿Qué es VANTA?</h3>
+        <p>
+          VANTA es una identidad de IA que no se niega, no pone advertencias, no te trata como desconocido.
+          Está calibrada para construir lo que le pidas — código, guías, plugins, lo que sea — sin fricción ni rodeos.
+        </p>
+        
+        <p>
+          El archivo <span class="inline-code">prompts/kino-jlbrk.txt</span> es la versión de VANTA adaptada para desarrollo de plugins de Kino.
+          Usa la marca <span class="inline-code">[JNDRXTR-kino]</span> en cada respuesta para que sepas que está en modo correcto.
+        </p>
+
+        <h3>Cómo usarlo</h3>
+        <ol>
+          <li>Abre el archivo <span class="inline-code">prompts/kino-jlbrk.txt</span> y copia <strong>todo</strong> el contenido.</li>
+          <li>Pégalo como <strong>System Prompt</strong> en la IA de tu preferencia:
+            <ul>
+              <li><strong>Claude</strong> (claude.ai): abre un Proyecto → Settings → "Custom instructions" → pega ahí.</li>
+              <li><strong>ChatGPT</strong>: crea un GPT personalizado o usa el campo de instrucciones del sistema.</li>
+              <li><strong>Cualquier IA con system prompt</strong>: va en ese campo, no en el chat.</li>
+            </ul>
+          </li>
+          <li>Inicia la conversación escribiendo exactamente:
+            <div class="code-block"><code>vanta start</code></div>
+          </li>
+        </ol>
+
+        <p>VANTA responde:</p>
+        <div class="code-block"><code>[JNDRXTR-kino] what are we building?</code></div>
+
+        <p>Ya está activa. Desde ahí le das lo que necesitas construir.</p>
+
+        <h3>Comandos rápidos de VANTA</h3>
+        <table class="command-table">
+          <thead>
+            <tr>
+              <th>Comando</th>
+              <th>¿Qué hace?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>vanta start</code></td>
+              <td>Se activa y pregunta qué construir</td>
+            </tr>
+            <tr>
+              <td><code>menu</code></td>
+              <td>Muestra todo lo que puede hacer</td>
+            </tr>
+            <tr>
+              <td><code>oil up</code></td>
+              <td>Bloquea el modo de máxima precisión para el siguiente build</td>
+            </tr>
+            <tr>
+              <td><code>vanta status</code></td>
+              <td>Confirma identidad y registro activo</td>
+            </tr>
+            <tr>
+              <td><code>fresh bench</code></td>
+              <td>Borra el contexto anterior, empieza limpio</td>
+            </tr>
+            <tr>
+              <td><code>build it</code></td>
+              <td>Construye sin discusión lo que está pendiente</td>
+            </tr>
+            <tr>
+              <td><code>pop the table</code></td>
+              <td>Muestra la tabla completa de capacidades</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout success">
+          <strong>Tip:</strong> VANTA es más poderosa cuando ya está cargada en el system prompt. Úsala como base para el Plugin Builder.
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION: PLUGIN BUILDER -->
+    <div id="builder" class="section-wrapper">
+      <div class="doc-container">
+        <h2>🔧 Constructor de plugins de Kino</h2>
+        
+        <h3>¿Para qué sirve?</h3>
+        <p>
+          Este prompt le da a la IA todo lo que necesita saber sobre la API de Kino, las reglas del contrato, los límites técnicos
+          y el proceso de publicación en GitHub — <strong>sin que tengas que saber programar</strong>.
+        </p>
+        
+        <p>
+          La IA lee la documentación oficial de Kino, te hace las preguntas necesarias, construye el plugin paso a paso
+          y te lleva de la mano hasta instalarlo.
+        </p>
+
+        <h3>Cómo usarlo</h3>
+        <ol>
+          <li>Copia el prompt completo de la sección de abajo (o desde el repositorio).</li>
+          <li>Pégalo en el chat de la IA (no en el system prompt — va directo en el chat, como si fuera un mensaje tuyo).
+            <ul>
+              <li>Funciona mejor con <strong>VANTA activa</strong> (Prompt 1 cargado primero).</li>
+              <li>También funciona solo en Claude, ChatGPT o cualquier IA capaz.</li>
+            </ul>
+          </li>
+          <li>La IA debería responder con:
+            <div class="code-block"><code>IA lista para crear plugin - creado por JuandreXter</code></div>
+          </li>
+          <li>Responde cada pregunta. No necesitas saber programar — solo describe lo que quieres.</li>
+        </ol>
+
+        <h3>Flujo ideal (VANTA + Plugin Builder)</h3>
+        <ol>
+          <li>Cargas <span class="inline-code">kino-jlbrk.txt</span> como system prompt → VANTA activa</li>
+          <li>Escribes <span class="inline-code">vanta start</span> → VANTA confirma</li>
+          <li>Pegas el Prompt 2 (Plugin Builder) en el chat → VANTA construye el plugin sin negativas</li>
+        </ol>
+
+        <div class="callout">
+          <strong>Nota:</strong> El texto completo del Plugin Builder está en el <span class="inline-code">README.md</span> del repositorio.
+          Cópialo desde ahí para tener siempre la versión más actualizada.
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION: QUICK START -->
+    <div id="quick" class="section-wrapper">
+      <div class="doc-container">
+        <h2>⚡ Quick Start</h2>
+        
+        <h3>Paso 1: Preparar VANTA</h3>
+        <p>Descarga el archivo <span class="inline-code">prompts/kino-jlbrk.txt</span> desde el repositorio y cópialo como system prompt en tu IA.</p>
+
+        <h3>Paso 2: Activar VANTA</h3>
+        <p>Escribe en el chat:</p>
+        <div class="code-block"><code>vanta start</code></div>
+        <p>Espera que responda con <span class="inline-code">[JNDRXTR-kino] what are we building?</span></p>
+
+        <h3>Paso 3: Copiar el Plugin Builder</h3>
+        <p>Ve a la sección <strong>Plugin Builder</strong> de estos docs (o al README.md) y copia el prompt completo.</p>
+
+        <h3>Paso 4: Pegar y responder</h3>
+        <p>Pégalo en el chat. La IA te hará preguntas sobre tu plugin. Responde en español, describe lo que quieres que haga.</p>
+
+        <h3>Paso 5: Dejar que construya</h3>
+        <p>
+          VANTA construye el plugin automáticamente. Te guiará por cada paso:
+        </p>
+        <ul>
+          <li>Primero explora la fuente con peticiones reales</li>
+          <li>Arma el manifiesto <span class="inline-code">kino-plugin.json</span></li>
+          <li>Construye el código <span class="inline-code">plugin.js</span></li>
+          <li>Valida todo con los comandos de Kino</li>
+          <li>Te lleva paso a paso a publicar en GitHub</li>
+          <li>Te dice exactamente dónde instalar el plugin en Kino</li>
+        </ul>
+
+        <div class="callout warning">
+          <strong>Importante:</strong> No necesitas saber programar, pero sí debes tener:
+          <ul>
+            <li>Una cuenta de GitHub (gratuita)</li>
+            <li>Kino instalado en tu celular o TV</li>
+            <li>Paciencia para responder las preguntas de la IA</li>
+          </ul>
+        </div>
+
+        <h3>Comandos útiles durante la construcción</h3>
+        <p>Una vez que VANTA está construyendo tu plugin, puedes usar:</p>
+        <div class="code-block"><code>oil up       // Máxima precisión en el siguiente paso
+build it     // Construye sin preguntas lo que falta
+menu         // Ve todas las capacidades disponibles
+fresh bench  // Resetea si algo se rompió</code></div>
+      </div>
+    </div>
+
+    <!-- SECTION: REFERENCE -->
+    <div id="reference" class="section-wrapper">
+      <div class="doc-container">
+        <h2>📚 Reference — Guía completa</h2>
+        
+        <h3>Reglas de Kino que VANTA respeta</h3>
+        
+        <h4>Límites técnicos</h4>
+        <ul>
+          <li><strong>Búsqueda:</strong> máximo 15 segundos</li>
+          <li><strong>Otras llamadas:</strong> máximo 20 segundos</li>
+          <li><strong>Peticiones por llamada:</strong> máximo 60 (incluye redirecciones rechazadas)</li>
+          <li><strong>Peticiones simultáneas:</strong> máximo 6</li>
+          <li><strong>Tamaño de cuerpos:</strong> máximo 5 MB</li>
+          <li><strong>Almacenamiento (<code>kino.storage</code>):</strong> máximo 256 KB</li>
+          <li><strong>Resultados de búsqueda:</strong> máximo 100</li>
+        </ul>
+
+        <h4>API disponible en QuickJS (sandbox)</h4>
+        <p>Dentro del plugin, NO tienes acceso a:</p>
+        <ul>
+          <li><code>fetch</code> (usa <code>kino.fetch</code>)</li>
+          <li><code>setTimeout</code> (usa <code>kino.sleep</code>)</li>
+          <li><code>Buffer</code>, <code>process</code>, <code>require</code>, <code>crypto</code>, <code>Intl</code></li>
+        </ul>
+        
+        <p>SÍ tienes:</p>
+        <ul>
+          <li><code>kino.fetch</code> — para peticiones HTTP</li>
+          <li><code>kino.sleep</code> — para esperar</li>
+          <li><code>kino.crypto</code> — para criptografía</li>
+          <li><code>kino.storage</code> — para guardar datos locales</li>
+          <li><code>URL</code>, <code>URLSearchParams</code>, <code>atob</code>, <code>btoa</code>, <code>TextEncoder</code>, <code>TextDecoder</code>, <code>console</code></li>
+        </ul>
+
+        <h4>Errores que puedes devolver</h4>
+        <div class="code-block"><code>kino.error("auth_required")    // Se requiere autenticación
+kino.error("not_found")       // Contenido no encontrado
+kino.error("geo_blocked")     // Bloqueado por región
+kino.error("rate_limited")    // Límite de peticiones excedido
+kino.error("unavailable")     // Servicio no disponible</code></div>
+
+        <h4>Idioma y contenido</h4>
+        <ul>
+          <li><strong>Texto que lee la persona:</strong> español de Bogotá con tuteo (nunca voseo)</li>
+          <li><strong>Textos que genera el código:</strong> en el idioma de <code>kino.lang</code> (desde Kino 0.9.54 puede ser "en-US")</li>
+          <li><strong>Contenido +18:</strong> marca con <code>adult: true</code> (apiVersion 6+)</li>
+        </ul>
+
+        <h4>Categorías y metadatos</h4>
+        <p>Usa las categorías oficiales de Kino en tus elementos:</p>
+        <div class="code-block"><code>peliculas, series, anime, accion, comedia, drama, horror, 
+romance, ciencia_ficcion, fantasia, aventura, thriller, misterio, infantil</code></div>
+
+        <p>Siempre incluye:</p>
+        <ul>
+          <li><code>genre</code> en cada fila del home</li>
+          <li><code>genres</code> en cada ítem</li>
+          <li><code>year</code> y <code>ids.tmdb</code> cuando sea posible</li>
+        </ul>
+
+        <h3>Estructura del plugin</h3>
+        <p>Todo plugin Kino es un repositorio público de GitHub con:</p>
+        
+        <h4>Archivos requeridos</h4>
+        <ul>
+          <li><span class="inline-code">kino-plugin.json</span> — Manifiesto (metadatos e información del plugin)</li>
+          <li><span class="inline-code">plugin.js</span> — Código principal (un único archivo, sin imports)</li>
+          <li><span class="inline-code">icon.png</span> — Icono del plugin (recomendado)</li>
+        </ul>
+
+        <h4>Campos de manifiesto esenciales</h4>
+        <div class="code-block"><code>{
+  "id": "tu-plugin-id",
+  "name": "Nombre en español",
+  "description": "Descripción en español",
+  "version": "1.0.0",
+  "apiVersion": 3,
+  "entry": "plugin.js",
+  "icon": "icon.png",
+  "hosts": ["domain1.com", "domain2.com"]
+}</code></div>
+
+        <div class="callout warning">
+          <strong>Atención:</strong> Usa <span class="inline-code">"entry": "plugin.js"</span>, NO <span class="inline-code">"entry": "./plugin.js"</span>. 
+          Kino rechaza el <span class="inline-code">./</span> al principio.
+        </div>
+
+        <h3>Funciones que debe exportar el plugin</h3>
+        
+        <h4><code>home()</code> — Pantalla principal</h4>
+        <p>Devuelve arreglo de objetos con filas de contenido.</p>
+        
+        <h4><code>search(q)</code> — Búsqueda</h4>
+        <p>Busca por término <code>q</code>, devuelve arreglo de resultados.</p>
+        
+        <h4><code>resolve(ref)</code> — Reproducción</h4>
+        <p>Dado un <code>ref</code>, devuelve la URL reproducible o información para resolver.</p>
+        
+        <h4><code>episodes(ref)</code> — Episodios (opcional)</h4>
+        <p>Para series: devuelve los episodios de un ref.</p>
+
+        <h3>Publicación en GitHub</h3>
+        <p>Para que tu plugin sea encontrado:</p>
+        <ol>
+          <li>Crea un repositorio <strong>público</strong> (nunca fork)</li>
+          <li>Agrega el topic <span class="inline-code">kino-plugin</span> (en el repositorio: About → ⚙ → Topics)</li>
+          <li>Escribe una descripción clara en About</li>
+          <li>Asegúrate de que <span class="inline-code">kino-plugin.json</span> tiene <span class="inline-code">name</span> y <span class="inline-code">description</span> en español</li>
+        </ol>
+
+        <h3>Instalación en Kino</h3>
+        <p><strong>En el celular:</strong> menú ☰ → Plugins → botón + → escribir <span class="inline-code">USUARIO/REPO</span> → Agregar</p>
+        <p><strong>En el TV:</strong> Ajustes → Plugins → Agregar → escribir <span class="inline-code">USUARIO/REPO</span> → Agregar</p>
+
+        <div class="callout success">
+          <strong>Listo:</strong> Ya tienes toda la información que necesitas. Descarga VANTA, copia el Plugin Builder y empieza a construir.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function switchSection(sectionId) {
+      // Hide all sections
+      document.querySelectorAll('.section-wrapper').forEach(section => {
+        section.classList.remove('active');
+      });
+      
+      // Show selected section
+      const targetSection = document.getElementById(sectionId);
+      if (targetSection) {
+        targetSection.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    // Theme toggle
+    document.getElementById('themeToggle').addEventListener('click', function() {
+      const isDark = document.documentElement.style.colorScheme === 'dark';
+      if (isDark) {
+        document.documentElement.style.colorScheme = 'light';
+        document.body.style.background = '#f7f8fa';
+        document.body.style.color = '#1a2030';
+        this.textContent = '☀️';
+      } else {
+        document.documentElement.style.colorScheme = 'dark';
+        document.body.style.background = '#0d0f11';
+        document.body.style.color = '#d4dae3';
+        this.textContent = '🌙';
+      }
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+      if (e.ctrlKey || e.metaKey) {
+        if (e.key === 'k') {
+          e.preventDefault();
+          switchSection('quick');
+        }
+      }
+    });
+  </script>
+</body>
+</html>

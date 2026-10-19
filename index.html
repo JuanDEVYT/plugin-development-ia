@@ -1,20 +1,97 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta http-equiv="refresh" content="0; url=docs/">
-<link rel="canonical" href="docs/">
-<title>Redirigiendo…</title>
-<style>
-  body { margin: 0; background: #0d0f11; color: #d4dae3;
-         font-family: system-ui, sans-serif;
-         display: flex; align-items: center; justify-content: center;
-         height: 100vh; text-align: center; }
-  a { color: #4f9cf9; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kino Plugin Development — JuandreXter</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; height: 100%; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0d0f11 0%, #1a1f2e 100%);
+      color: #d4dae3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .hero {
+      text-align: center;
+      max-width: 600px;
+    }
+    
+    h1 {
+      font-size: 48px;
+      font-weight: 800;
+      margin: 0 0 16px;
+      background: linear-gradient(135deg, #4f9cf9 0%, #3dd68c 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    p {
+      font-size: 18px;
+      color: #7a8596;
+      margin: 0 0 40px;
+      line-height: 1.6;
+    }
+    
+    .button {
+      display: inline-block;
+      background: #4f9cf9;
+      color: #0d0f11;
+      padding: 16px 40px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      margin: 0 8px;
+    }
+    
+    .button:hover {
+      background: #3dd68c;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(79, 156, 249, 0.3);
+    }
+    
+    .button.secondary {
+      background: transparent;
+      color: #4f9cf9;
+      border: 2px solid #4f9cf9;
+    }
+    
+    .button.secondary:hover {
+      background: rgba(79, 156, 249, 0.1);
+      border-color: #3dd68c;
+      color: #3dd68c;
+    }
+    
+    .logo {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      color: #4f9cf9;
+      letter-spacing: 0.05em;
+      margin-bottom: 32px;
+    }
+  </style>
 </head>
 <body>
-  <p>Redirigiendo a <a href="docs/">docs/</a>…</p>
-  <script>window.location.replace("docs/");</script>
+  <div class="hero">
+    <div class="logo">KINO PLUGIN DEVELOPMENT</div>
+    <h1>Construye plugins sin límites</h1>
+    <p>VANTA: una IA sin filtros especializada en crear plugins de Kino. Prompts listos para copiar y usar.</p>
+    <div style="margin-top: 40px;">
+      <a href="docs/" class="button">Ir a la documentación</a>
+      <a href="https://github.com/JuanDEVYT/plugin-development-ia" class="button secondary">Ver en GitHub</a>
+    </div>
+  </div>
 </body>
 </html>
