@@ -727,6 +727,8 @@ td code {
 @media (max-width: 768px) {
   :root { --sidebar-w: 260px; }
 
+  html, body { overflow-x: hidden; }
+
   .sidebar {
     transform: translateX(-100%);
   }
@@ -742,16 +744,56 @@ td code {
     padding-left: max(16px, env(safe-area-inset-left, 0px));
     padding-right: max(16px, env(safe-area-inset-right, 0px));
     padding-top: 24px;
+    max-width: 100%;
+    width: 100%;
   }
 
   .menu-toggle { display: flex; }
 
-  .hero { flex-direction: column; gap: 16px; padding: 20px; }
-  .hero-title { font-size: 18px; }
+  /* hide non-essential topbar items on small screens */
+  .topbar-badge { display: none; }
+
+  h1 { font-size: 22px; }
+  .hero { flex-direction: column; gap: 16px; padding: 18px; }
+  .hero-title { font-size: 17px; }
+  .hero-icon { width: 42px; height: 42px; font-size: 18px; }
 
   .flow { flex-direction: column; }
-  .flow-step { border-radius: 8px !important; margin-left: 0 !important; border-left-color: var(--border) !important; }
+  .flow-step {
+    border-radius: 8px !important;
+    margin-left: 0 !important;
+    border-left-color: var(--border) !important;
+    min-width: 0;
+  }
   .flow-arrow { transform: rotate(90deg); align-self: center; }
+
+  /* cmd-grid stacks on mobile */
+  .cmd-grid {
+    grid-template-columns: 1fr;
+  }
+  .cmd-key {
+    border-bottom: none;
+    padding-bottom: 4px;
+  }
+  .cmd-desc {
+    border-left: none;
+    border-top: 1px solid var(--border-soft);
+    padding-top: 6px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .cmd-row:last-child .cmd-desc { border-bottom: none; }
+
+  /* steps narrower on mobile */
+  .step { gap: 12px; }
+  .step-num { width: 32px; height: 32px; font-size: 11px; }
+  .step::before { left: 15px; top: 32px; }
+
+  /* tables always scroll */
+  .table-wrap { -webkit-overflow-scrolling: touch; }
+
+  /* prompt block */
+  .prompt-body { max-height: 260px; }
 }
 
 /* ---- SCROLLBAR ---- */
