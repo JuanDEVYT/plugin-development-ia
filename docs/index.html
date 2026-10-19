@@ -800,6 +800,12 @@ td code {
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* prevent sidebar flash on mobile load */
+@media (max-width: 768px) {
+  .sidebar { visibility: hidden; }
+  .sidebar.ready { visibility: visible; }
+}
 </style>
 
 <!-- TOP BAR -->
@@ -1516,6 +1522,14 @@ try {
   const last = localStorage.getItem('kino-docs-section');
   if (last) showSection(last);
 } catch(e) {}
+
+// Ensure sidebar is closed on mobile on load, then make it visible
+const sidebarEl = document.getElementById('sidebar');
+if (window.innerWidth < 769) {
+  sidebarEl.classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+}
+requestAnimationFrame(() => sidebarEl.classList.add('ready'));
 
 // Theme toggle
 const themeBtn = document.getElementById('themeBtn');
